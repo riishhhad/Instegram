@@ -1,9 +1,16 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instegram/Bloc/highlight_bloc.dart';
 import 'package:instegram/Bloc/inste_bloc.dart';
+import 'package:instegram/Bloc/post_bloc.dart';
+import 'package:instegram/Bloc/tag_bloc.dart';
 import 'package:instegram/Repository/Modelclass/inste.dart';
+import 'package:instegram/Repository/Modelclass/post.dart';
+import 'package:instegram/Repository/Modelclass/tag.dart';
+import 'package:instegram/UI/screen2.dart';
+
+import '../Repository/Modelclass/highlight.dart';
 
 class screen1 extends StatefulWidget {
   const screen1({super.key});
@@ -13,16 +20,34 @@ class screen1 extends StatefulWidget {
 }
 
 class _screen1State extends State<screen1> {
+
   late Inste happy;
-  @override
-  void initState() {
-    BlocProvider.of<InsteBloc>(context).add(FetcinsteEvent());
-    // TODO: implement initState
-    super.initState();
-  }
+  late Highlight sad;
+  late Post moov;
+  late Tag  vibe;
+  TextEditingController controller=TextEditingController();
+
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black,appBar: AppBar(title:  SizedBox(height: 60,
+      child: TextFormField(
+        controller: controller,
+        decoration: const InputDecoration(
+          icon: Padding(
+            padding: EdgeInsets.only(left: 8,top: 20),
+            child: Icon(Icons.search,size: 40,color: Colors.black,),
+          ),
+          hintText: 'What do people call you?',
+          labelText: 'user name',
+        ),
+        onFieldSubmitted: (value){
+          BlocProvider.of<InsteBloc>(context).add(FetcinsteEvent(idinsta: controller.text));
+          BlocProvider.of<HighlightBloc>(context).add(FetchighlightEvent(highlightid: controller.text));
+          BlocProvider.of<PostBloc>(context).add(FetcpostEvent(postid: controller.text));
+          BlocProvider.of<TagBloc>(context).add(FetcTagEvent(tagid: controller.text));
+        },
+      ),
+    ),),
       body: DefaultTabController(
         length: 2,
         child: SingleChildScrollView(
@@ -39,18 +64,7 @@ class _screen1State extends State<screen1> {
     return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 60,
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    icon: Padding(
-                      padding: EdgeInsets.only(left: 8,top: 20),
-                      child: Icon(Icons.search,size: 40,),
-                    ),
-                    hintText: 'What do people call you?',
-                    labelText: 'Name *',
-                  ),
-                ),
-              ),
+
               Padding(
                 padding: EdgeInsets.only(top: 15),
                 child: Row(
@@ -58,7 +72,7 @@ class _screen1State extends State<screen1> {
                     Padding(
                       padding: EdgeInsets.only(left: 15, top: 10),
                       child:
-                          SizedBox(width: 80, child: Image.asset("assets/1.png")),
+                          SizedBox(width: 70, child: CircleAvatar(radius: 40,backgroundImage: NetworkImage(happy.data!.profilePicUrl.toString()))),
                     ),
                     Padding(
                       padding: EdgeInsets.only(
@@ -73,7 +87,7 @@ class _screen1State extends State<screen1> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              '129',
+                              happy.data!.mediaCount.toString(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.white,
@@ -106,15 +120,17 @@ class _screen1State extends State<screen1> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            '3680',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20.64,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w500,
-                              height: 0,
+                          SizedBox(width: 200,height: 20,
+                            child: Text(
+                              happy.data!.followerCount.toString(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.64,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                                height: 0,
+                              ),
                             ),
                           ),
                           Text(
@@ -131,37 +147,41 @@ class _screen1State extends State<screen1> {
                         ],
                       ),
                     ),
-                    Container(
-                      width: 77,
-                      height: 46,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '230',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20.64,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w500,
-                              height: 0,
+                    GestureDetector(onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder:(_)=> screen2(followingid: controller.text, follwersid: controller.textg,)));
+                      },
+                      child: Container(
+                        width: 77,
+                        height: 46,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              happy.data!.followingCount.toString(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.64,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                                height: 0,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Following',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17.20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 0,
+                            Text(
+                              'Following',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.20,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     )
                   ],
@@ -185,14 +205,16 @@ class _screen1State extends State<screen1> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Name',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20.64,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w500,
-                                    height: 0,
+                                SizedBox(width: 148,height: 20,
+                                  child: Text(
+                                    happy.data!.fullName.toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20.64,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500,
+                                      height: 0,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -204,14 +226,16 @@ class _screen1State extends State<screen1> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Local business',
-                                  style: TextStyle(
-                                    color: Color(0xFF8E8E8E),
-                                    fontSize: 16.05,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
+                                SizedBox(width: 130,height: 20,
+                                  child: Text(
+                                    happy.data!.biography.toString(),
+                                    style: TextStyle(
+                                      color: Color(0xFF8E8E8E),
+                                      fontSize: 16.05,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w400,
+                                      height: 0,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -394,20 +418,35 @@ class _screen1State extends State<screen1> {
               Container(
                 height: 90,
                 width: double.infinity,
-                color: Colors.white,
-                child: ListView.builder(
+                child: BlocBuilder<HighlightBloc,HighlightState>(
+  builder: (context, state) {
+    if (state is highlightBlocloading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );}
+      if (state is highlightBlocerror){
+        return Center(child: Text("Error"),);
+      }
+      if (state is highlightBlocloaded) {
+        sad= BlocProvider.of<HighlightBloc>(context).highlight;
+print(sad);
+
+    return ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 4,
+                  itemCount:sad.data!.items?.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
                       padding: EdgeInsets.only(left: 20),
                       child: CircleAvatar(
-                        radius: 30,
+                        radius: 35,
                         backgroundColor: Colors.black,
+                        backgroundImage: NetworkImage(sad.data!.items![index].coverMedia!.croppedImageVersion!.url.toString()),
                       ),
                     );
                   },
-                ),
+                );}else{return SizedBox();}
+  },
+),
               ),
               SizedBox(
                   height: 40,
@@ -430,38 +469,66 @@ class _screen1State extends State<screen1> {
                 child: TabBarView(
                   children: [
                     Container(
-                      color: Colors.red,
-                      child: GridView.count(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 20.0,children: [
-                            Image.asset("assets/1.png"),
-                            Image.asset("assets/1.png"),
-                            Image.asset("assets/1.png"),
-                            Image.asset("assets/1.png"),
-                            Image.asset("assets/1.png"),
-                            Image.asset("assets/1.png"),
-                            Image.asset("assets/1.png"),
-                        Image.asset("assets/1.png"),
-                        Image.asset("assets/1.png"),
-                      ],
-                      ),
+                      color: Colors.black,
+                      child: BlocBuilder<PostBloc,PostState>(
+  builder: (context, state) {
+    if (state is postBlocloading) {
+      return Center(child: CircularProgressIndicator(),);}
+    if (state is postBlocerror) {
+      return Center(child: Text("Error"),);
+    }
+    if (state is postBlocloaded) {
+      moov=BlocProvider.of<PostBloc>(context).post;
+
+    return GridView.count(
+      crossAxisCount: 3,
+   childAspectRatio: 1650/1900,
+      shrinkWrap: true,
+      children: List.generate(moov.data!.items!.length, (index) {
+        return Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(moov.data!.items![index].imageVersions!.items![0].url.toString().toString()),
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      },),
+    );}else{return SizedBox();}
+  },
+),
                     ),
                     Container(
-                      color: Colors.green, child: GridView.count(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 20.0,children: [
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                      Image.asset("assets/1.png"),
-                    ],
+                      color: Colors.black,
+                      child: BlocBuilder<TagBloc,TagState>(
+                        builder: (context, state) {
+                          if (state is tagBlocloading) {
+                            return Center(child: CircularProgressIndicator(),);}
+                          if (state is tagBlocerror) {
+                            return Center(child: Text("Error"),);
+                          }
+                          if (state is tagBlocloaded) {
+                            vibe=BlocProvider.of<TagBloc>(context).tag;
+
+                            return GridView.count(
+                              physics: NeverScrollableScrollPhysics(),
+                              crossAxisCount: 3,
+                              childAspectRatio: 1650/1900,
+                              shrinkWrap: true,
+                              children: List.generate(vibe.data!.items!.length, (index) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(vibe.data!.items![index].displayUrl.toString()),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                );
+                              },),
+                            );}else{return SizedBox();}
+                        },
+                      ),
                     ),
-                    )
                   ],
                 ),
               )

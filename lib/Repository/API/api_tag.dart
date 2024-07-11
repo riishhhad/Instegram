@@ -5,23 +5,25 @@ import 'package:http/http.dart';
 import 'package:instegram/Repository/Modelclass/inste.dart';
 
 
+import '../Modelclass/post.dart';
+import '../Modelclass/tag.dart';
 import 'api_client.dart';
 
 
 
 
-class Insteapi {
+class Tagapi {
 
   ApiClient apiClient = ApiClient();
 
 
-  Future<Inste> getinste(String instaid) async {
-    String trendingpath ="https://instagram-scraper-api2.p.rapidapi.com/v1/info?username_or_id_or_url=$instaid";
+  Future<Tag> gettag(String tag) async {
+    String trendingpath ="https://instagram-scraper-api2.p.rapidapi.com/v1/tagged?username_or_id_or_url=$tag";
     var body = {
 
     };
     Response response = await apiClient.invokeAPI(trendingpath, 'GET', body);
 
-    return Inste.fromJson(jsonDecode(response.body));
+    return Tag.fromJson(jsonDecode(response.body));
   }
 }

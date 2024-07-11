@@ -12,10 +12,10 @@ class InsteBloc extends Bloc<InsteEvent, InsteState> {
   Insteapi  insteApi= Insteapi();
 
   InsteBloc() : super(InsteInitial()) {
-    on<InsteEvent>((event, emit) async{
+    on<FetcinsteEvent>((event, emit) async{
       emit (insteBlocloading());
       try{
-        inste= await insteApi.getinste();
+        inste= await insteApi.getinste(event.idinsta);
         emit(insteBlocloaded());
 
       }
